@@ -8,6 +8,7 @@ import { NotificationsPanel } from './components/NotificationsPanel';
 import { MyCrops } from './components/MyCrops';
 import { Analytics } from './components/Analytics';
 import { Profile } from './components/Profile';
+import { Support } from './components/Support';
 
 export default function App() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -148,12 +149,7 @@ export default function App() {
       case 'analytics':
         return <Analytics accessToken={accessToken} />;
       case 'support':
-        return (
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Support</h2>
-            <p className="text-gray-600">Expert support and help center coming soon...</p>
-          </div>
-        );
+        return <Support accessToken={accessToken} />;
       case 'profile':
         return <Profile accessToken={accessToken} onLogout={handleLogout} />;
       default:
