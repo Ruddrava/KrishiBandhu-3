@@ -280,6 +280,7 @@ export function Profile({ onLogout }: ProfileProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="bengali">বাংলা (Bengali)</SelectItem>
                     <SelectItem value="hindi">हिंदी (Hindi)</SelectItem>
                     <SelectItem value="marathi">मराठी (Marathi)</SelectItem>
                     <SelectItem value="gujarati">ગુજરાતી (Gujarati)</SelectItem>
