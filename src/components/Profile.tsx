@@ -36,15 +36,15 @@ export function Profile({ onLogout }: ProfileProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   
-  // Mock user data - in real app, this would come from API
+  // User profile data - will be loaded from API in real implementation
   const [profileData, setProfileData] = useState({
-    name: 'Rajesh Kumar',
-    email: 'rajesh.kumar@email.com',
-    phone: '+91 98765 43210',
-    location: 'Kharghar, Navi Mumbai, Maharashtra',
-    farmSize: '5.2',
-    farmingExperience: '12',
-    cropsGrown: ['Wheat', 'Rice', 'Corn'],
+    name: '',
+    email: '',
+    phone: '',
+    location: '',
+    farmSize: '',
+    farmingExperience: '',
+    cropsGrown: [] as string[],
     language: 'english',
     notifications: {
       weather: true,
@@ -120,10 +120,10 @@ export function Profile({ onLogout }: ProfileProps) {
   };
 
   const farmingStats = [
-    { label: 'Active Crops', value: '3', icon: '🌱' },
-    { label: 'Total Area', value: '5.2 acres', icon: '🏞️' },
-    { label: 'Years Farming', value: '12', icon: '📅' },
-    { label: 'Harvest Cycles', value: '24', icon: '🌾' },
+    { label: 'Active Crops', value: profileData.cropsGrown.length.toString() || '0', icon: '🌱' },
+    { label: 'Total Area', value: profileData.farmSize ? `${profileData.farmSize} acres` : '0 acres', icon: '🏞️' },
+    { label: 'Years Farming', value: profileData.farmingExperience || '0', icon: '📅' },
+    { label: 'Harvest Cycles', value: profileData.farmingExperience ? (parseInt(profileData.farmingExperience) * 2).toString() : '0', icon: '🌾' },
   ];
 
   return (
@@ -133,9 +133,9 @@ export function Profile({ onLogout }: ProfileProps) {
         <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
           <div className="relative">
             <Avatar className="h-24 w-24">
-              <AvatarImage src="" alt={profileData.name} />
+              <AvatarImage src="" alt={profileData.name || 'User'} />
               <AvatarFallback className="text-2xl font-semibold bg-green-100 text-green-700">
-                {profileData.name.split(' ').map(n => n[0]).join('')}
+                {profileData.name ? profileData.name.split(' ').map(n => n[0]).join('') : 'U'}
               </AvatarFallback>
             </Avatar>
             <Button 
@@ -150,13 +150,18 @@ export function Profile({ onLogout }: ProfileProps) {
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900">{profileData.name}</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  {profileData.name || 'Please add your name'}
+                </h2>
                 <p className="text-gray-600 flex items-center mt-1">
                   <MapPin className="h-4 w-4 mr-1" />
-                  {profileData.location}
+                  {profileData.location || 'Add your farm location'}
                 </p>
                 <p className="text-green-600 font-medium mt-1">
-                  Farming since {new Date().getFullYear() - parseInt(profileData.farmingExperience)} • {profileData.farmSize} acres
+                  {profileData.farmingExperience && profileData.farmSize 
+                    ? `Farming since ${new Date().getFullYear() - parseInt(profileData.farmingExperience)} • ${profileData.farmSize} acres`
+                    : 'Complete your farm details'
+                  }
                 </p>
               </div>
               
