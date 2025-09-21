@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { AuthForm } from './components/AuthForm';
+import { ResetPasswordForm } from './components/ResetPasswordForm';
 import { NotificationsPanel } from './components/NotificationsPanel';
 import { MyCrops } from './components/MyCrops';
 
@@ -12,6 +13,7 @@ export default function App() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
 
   const handleMenuClick = () => {
     setIsNavOpen(true);
@@ -42,6 +44,30 @@ export default function App() {
     localStorage.setItem('access_token', token);
   };
 
+  const handlePasswordReset = async () => {
+    try {
+      const { supabase } = await import('./utils/supabase/client');
+      
+      // Sign out the recovery session
+      await supabase.auth.signOut();
+      
+      // Clear app state
+      setIsPasswordReset(false);
+      setAccessToken(null);
+      localStorage.removeItem('access_token');
+      
+      // Ensure URL is clean
+      window.history.replaceState({}, '', window.location.pathname);
+    } catch (error) {
+      console.error('Password reset cleanup error:', error);
+      // Still proceed with cleanup even if signOut fails
+      setIsPasswordReset(false);
+      setAccessToken(null);
+      localStorage.removeItem('access_token');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       const { supabase } = await import('./utils/supabase/client');
@@ -58,6 +84,35 @@ export default function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Check if this is a password reset session (from email link)
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type');
+        const code = urlParams.get('code');
+        
+        if (type === 'recovery' && code) {
+          try {
+            const { supabase } = await import('./utils/supabase/client');
+            
+            const { error } = await supabase.auth.exchangeCodeForSession(code);
+            
+            if (error) {
+              console.error('Recovery session error:', error);
+              // Clear the invalid parameters
+              window.history.replaceState({}, '', window.location.pathname);
+            } else {
+              setIsPasswordReset(true);
+              // Clear URL parameters but keep the recovery session active
+              window.history.replaceState({}, '', window.location.pathname);
+              setIsCheckingAuth(false);
+              return;
+            }
+          } catch (error) {
+            console.error('Code exchange error:', error);
+            // Clear the invalid parameters
+            window.history.replaceState({}, '', window.location.pathname);
+          }
+        }
+
         const storedToken = localStorage.getItem('access_token');
         if (storedToken) {
           const { supabase } = await import('./utils/supabase/client');
@@ -133,6 +188,10 @@ export default function App() {
         </div>
       </div>
     );
+  }
+
+  if (isPasswordReset) {
+    return <ResetPasswordForm onPasswordReset={handlePasswordReset} />;
   }
 
   if (!accessToken) {

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card } from "./ui/card";
 import { Alert, AlertDescription } from "./ui/alert";
-import { Loader2, User } from "lucide-react";
+import { Loader2, User, ArrowLeft, Mail } from "lucide-react";
 import krishiBandhuLogo from "figma:asset/93a11ef0f4c1a2af6f65d747ec6e1d56f7092a96.png";
 
 interface AuthFormProps {
@@ -13,8 +13,11 @@ interface AuthFormProps {
 
 export function AuthForm({ onAuthSuccess }: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -106,6 +109,37 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      const { supabase } = await import("../utils/supabase/client");
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        setError(`Password reset failed: ${error.message}`);
+        return;
+      }
+
+      setSuccessMessage(
+        "Password reset email sent! Please check your inbox and follow the instructions to reset your password."
+      );
+    } catch (error) {
+      console.error("Password reset error:", error);
+      setError(
+        `Password reset error: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -131,8 +165,64 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
           </p>
         </div>
 
-        {/* Auth form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Conditional form rendering */}
+        {isForgotPassword ? (
+          <form onSubmit={handlePasswordReset} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="resetEmail">Email Address</Label>
+              <Input
+                id="resetEmail"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
+            {(error || successMessage) && (
+              <Alert className={successMessage ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+                <AlertDescription className={successMessage ? "text-green-800" : "text-red-800"}>
+                  {successMessage || error}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sending reset email...
+                </>
+              ) : (
+                <>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Send Reset Email
+                </>
+              )}
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setIsForgotPassword(false);
+                setError("");
+                setSuccessMessage("");
+                setResetEmail("");
+              }}
+              className="w-full text-green-600 hover:text-green-700"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Sign In
+            </Button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -223,6 +313,24 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
             </Alert>
           )}
 
+          {/* Forgot Password Link - Only show in login mode */}
+          {isLogin && (
+            <div className="text-right">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setIsForgotPassword(true);
+                  setError("");
+                  setSuccessMessage("");
+                }}
+                className="text-sm text-green-600 hover:text-green-700 p-0 h-auto font-normal"
+              >
+                Forgot Password?
+              </Button>
+            </div>
+          )}
+
           <Button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700"
@@ -243,22 +351,26 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
             )}
           </Button>
         </form>
+        )}
 
-        {/* Toggle between login/register */}
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError("");
-            }}
-            className="text-green-600 hover:text-green-700"
-          >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
-          </Button>
-        </div>
+        {/* Toggle between login/register - Hide when in forgot password mode */}
+        {!isForgotPassword && (
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+                setSuccessMessage("");
+              }}
+              className="text-green-600 hover:text-green-700"
+            >
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"}
+            </Button>
+          </div>
+        )}
       </Card>
     </div>
   );
