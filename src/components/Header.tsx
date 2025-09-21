@@ -27,7 +27,7 @@ export function Header({ onMenuClick, onProfileClick, onNotificationClick }: Hea
           <img 
             src={krishiBandhuLogo} 
             alt="KrishiBandhu Logo" 
-            className="h-10 w-auto md:h-12 lg:h-16 object-contain"
+            className="h-12 w-auto md:h-16 lg:h-20 object-contain"
           />
           <div className="hidden sm:block">
             <h1 className="text-xl md:text-2xl font-bold text-green-800">

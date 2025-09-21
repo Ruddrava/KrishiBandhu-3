@@ -182,7 +182,7 @@ export default function App() {
           <img 
             src="figma:asset/93a11ef0f4c1a2af6f65d747ec6e1d56f7092a96.png" 
             alt="KrishiBandhu Logo" 
-            className="h-20 w-auto mx-auto mb-4"
+            className="h-24 w-auto mx-auto mb-4"
           />
           <p className="text-gray-600">Loading...</p>
         </div>

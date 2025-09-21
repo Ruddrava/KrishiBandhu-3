@@ -155,7 +155,7 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
           <img
             src={krishiBandhuLogo}
             alt="KrishiBandhu Logo"
-            className="h-16 w-auto mx-auto"
+            className="h-20 w-auto mx-auto"
           />
           <h1 className="text-2xl font-semibold text-green-800">
             KrishiBandhu
