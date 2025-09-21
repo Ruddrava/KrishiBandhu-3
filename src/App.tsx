@@ -6,6 +6,7 @@ import { AuthForm } from './components/AuthForm';
 import { ResetPasswordForm } from './components/ResetPasswordForm';
 import { NotificationsPanel } from './components/NotificationsPanel';
 import { MyCrops } from './components/MyCrops';
+import { Analytics } from './components/Analytics';
 
 export default function App() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -144,12 +145,7 @@ export default function App() {
       case 'crops':
         return <MyCrops accessToken={accessToken} />;
       case 'analytics':
-        return (
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Analytics</h2>
-            <p className="text-gray-600">Crop analytics and insights coming soon...</p>
-          </div>
-        );
+        return <Analytics accessToken={accessToken} />;
       case 'support':
         return (
           <div className="p-6">
