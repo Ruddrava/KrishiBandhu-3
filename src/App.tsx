@@ -7,6 +7,7 @@ import { ResetPasswordForm } from './components/ResetPasswordForm';
 import { NotificationsPanel } from './components/NotificationsPanel';
 import { MyCrops } from './components/MyCrops';
 import { Analytics } from './components/Analytics';
+import { Profile } from './components/Profile';
 
 export default function App() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -154,18 +155,7 @@ export default function App() {
           </div>
         );
       case 'profile':
-        return (
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Profile</h2>
-            <p className="text-gray-600">Farmer profile and settings coming soon...</p>
-            <button 
-              onClick={handleLogout}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Logout
-            </button>
-          </div>
-        );
+        return <Profile accessToken={accessToken} onLogout={handleLogout} />;
       default:
         return <Dashboard accessToken={accessToken} />;
     }
