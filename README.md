@@ -1,7 +1,7 @@
 
   # KrishiBandhu UI/UX Design
 
-  This is a code bundle for KrishiBandhu UI/UX Design. The original project is available at https://www.figma.com/design/q3y9KvzVddTBEyiMuYA3KY/KrishiBandhu-UI-UX-Design.
+  For The Farmers, By The Farmers
 
   ## Running the code
 
